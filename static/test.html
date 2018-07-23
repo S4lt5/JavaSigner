@@ -19,21 +19,20 @@
         <param name="archive" value="javasignertest.jar"/>        
         Applet failed to run.  No Java plug-in was found.
         </object>
-    -->
-        <applet id="HelloApplet" code="javaapplet.HelloApplet.class" width="350" height="350">
+        <applet code="javaapplet.HelloApplet.class" width="350" height="350">
                 TestHello 
                 <br/>
         </applet>
-
-        <applet id="testinput" code="testinput.class" width="350" height="350">
+    -->
+        <applet code="javaapplet.testinput.class" width="100" height="50">
                 TestInput1
         </applet>
-        <form name="testinput12" method="POST" action="http://localhost:3000/testinput">
+        <form name="testinput12" method="POST" action="">
               Input 1: <input type="text" name="input1" size = "30"/>           
         </form>
         <script>
-        function submitForm() {
-            document.getElementById("testinput12").submit();
+        function submitForm() {       
+            document.forms[0].submit();
         }    
         </script>
     </body>

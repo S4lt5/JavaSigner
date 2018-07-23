@@ -11,8 +11,8 @@ public class testinput extends JApplet {
 	
 	private JButton button = new JButton("Submit");
 	public void init() {
-		getContentPane().setLayout(new FlowLayout());
-		getContentPane().add(button);
+		getRootPane().getContentPane().setLayout(new FlowLayout());
+		getRootPane().getContentPane().add(button);
 		button.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
 				buttonActionPerformed(evt);
