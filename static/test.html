@@ -1,28 +1,40 @@
-<head>
-    <script>
-        function AddEm()
-        {
-            console.log('blha blah blah');
-        }
-    </script>
-</head>
-<body>
-    <h1>This is a test</h1>
-    <p> blah blah blah</p>
-<!--     <object type="application/x-java-applet" height="300" width="550">
+<!DOCTYPE html>
+    <head>
+        <script>
+            function AddEm()
+            {
+                console.log('blha blah blah');
+            }
+        </script>
+    </head>
+    <body>
+        <h1>This is a test</h1>
+        <p> blah blah blah</p>
+
+    <!--    
+        <object type="application/x-java-applet" height="300" width="550">
         <param name="code" value="HelloApplet.class" />
         <param name="val1" value="4" />
         <param name="val2" value="4" />
         <param name="archive" value="javasignertest.jar"/>        
         Applet failed to run.  No Java plug-in was found.
-      </object>
+        </object>
     -->
-      <applet code = "javaapplet.HelloApplet.class" width="350" height="350">
-            Java applet that draws animated bubbles.
-            </applet>
-      <form>
-          Value 1 <input type="text" id="val1"/>      
-          Value 2 <input type="text" id="val2"/>      
-          Value 3 <input type="text" id="val3"/>      
+        <applet id="HelloApplet" code="javaapplet.HelloApplet.class" width="350" height="350">
+                TestHello 
+                <br/>
+        </applet>
+
+        <applet id="testinput" code="testinput.class" width="350" height="350">
+                TestInput1
+        </applet>
+        <form name="testinput12" method="POST" action="http://localhost:3000/javaaplet/process">
+              Input 1: <input type="text" name="input1" size = "30"/>           
         </form>
-</body>
+    </body>
+    <script type="text/javascript">
+        function submitForm() {
+            document.getElementById("testinput12").submit();
+        }    
+    </script>
+</html>
