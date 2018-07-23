@@ -28,13 +28,13 @@
         <applet id="testinput" code="testinput.class" width="350" height="350">
                 TestInput1
         </applet>
-        <form name="testinput12" method="POST" action="http://localhost:3000/javaaplet/process">
+        <form name="testinput12" method="POST" action="http://localhost:3000/testinput">
               Input 1: <input type="text" name="input1" size = "30"/>           
         </form>
-    </body>
-    <script type="text/javascript">
+        <script>
         function submitForm() {
             document.getElementById("testinput12").submit();
         }    
-    </script>
+        </script>
+    </body>
 </html>
