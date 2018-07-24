@@ -3,7 +3,8 @@ package javaapplet;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
-
+import java.security.*;
+import java.util.Collections;
 import netscape.javascript.*;
 
 
@@ -21,6 +22,7 @@ public class testinput extends JApplet {
 		}
 	public void buttonActionPerformed(ActionEvent evt) throws JSException {
 		try {
+			//printMultipleCertificates(builder.getKeyStore());
 			JSObject jsObj = JSObject.getWindow(this);
 			String input = (String)jsObj.call("getString", null);
 			jsObj.call("getSignature", input);

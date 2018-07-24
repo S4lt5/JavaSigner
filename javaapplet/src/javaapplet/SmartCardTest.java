@@ -2,7 +2,7 @@ package javaapplet;
 
 import java.security.*;
 import java.util.Collections;
-import sun.security.pkcs11.*;
+import sun.security.pkcs11.SunPKCS11;
 
 public class SmartCardTest {
 	public static void main(String... args) throws KeyStoreException {
@@ -15,10 +15,9 @@ public class SmartCardTest {
 	 */
 	@SuppressWarnings("restriction")
 	public static void registerProvider() {
-		Provider provider = new SunPKCS11(/*SmartCardTest.class.getResourceAsStream("/pkcs11.cfg")*/ "ehllo");
+		Provider provider = new SunPKCS11();
 		Security.addProvider(provider);
 	}
-	
 	/*
 	 Creates a new PKCS#11 based KeyStore.
 	 return The created KeyStore.
@@ -30,7 +29,7 @@ public class SmartCardTest {
 		return builder.getKeyStore();
 	}
 	/*
-	 * prints multiple certficates for multiple alias
+	 * Prints multiple certficates for multiple alias
 	 */
 
 	public static void printMultipleCertificates(KeyStore keyStore) throws KeyStoreException {
