@@ -22,7 +22,8 @@ public class testinput extends JApplet {
 	public void buttonActionPerformed(ActionEvent evt) throws JSException {
 		try {
 			JSObject jsObj = JSObject.getWindow(this);
-			jsObj.call("submitForm", null);
+			String input = (String)jsObj.call("getString", null);
+			jsObj.call("getSignature", input);
 			} catch (JSException ex) {
 				ex.printStackTrace();
 				}
