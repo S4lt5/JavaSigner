@@ -31,7 +31,8 @@ public class SmartCardTest {
                 }
                 else if(f2.exists())
                 {
-                	libraryPath = "library = \"C:\\\\Program Files\\\\HID Global\\\\ActivClient\\\\acpkcs211.dll\"\n";
+                	libraryPath = "library = \"C:\\\\Program Files\\\\HID Global\\\\ActivClient\\\\acpkcs211.dll\"\n" +
+                					"showInfo = true\n";
                 }
             
                 String myConfig = "name = FirefoxKeyStore\n" +
