@@ -24,11 +24,15 @@ public class SmartCardTest {
                 String libraryPath = "library = \"/usr/local/lib/pkcs11/cackey.dylib\"\n";
                 //check for opensc
                 File f = new File("C:\\Program Files\\OpenSC Project\\OpenSC\\pkcs11\\opensc-pkcs11.dll");
+                File f2 = new File("C:\\Program Files\\HID Global\\ActivClient\\acpkcs211.dll");
                 if(f.exists())
                 {
                     libraryPath = "library = \"C:\\\\Program Files\\\\OpenSC Project\\\\OpenSC\\\\pkcs11\\\\opensc-pkcs11.dll\"\n";
                 }
-                
+                else if(f2.exists())
+                {
+                	libraryPath = "library = \"C:\\\\Program Files\\\\HID Global\\\\ActivClient\\\\acpkcs211.dll\"\n";
+                }
             
                 String myConfig = "name = FirefoxKeyStore\n" +
                                     libraryPath +
