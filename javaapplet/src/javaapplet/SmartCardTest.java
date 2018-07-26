@@ -8,7 +8,7 @@ import java.util.Collections;
 import sun.security.pkcs11.SunPKCS11;
 
 public class SmartCardTest {
-	public static void main(String... args) throws KeyStoreException {
+	public static void main(String[] args) throws KeyStoreException {
 		registerProvider();
 		KeyStore keyStore = createKeyStore();
 		Collections.list(keyStore.aliases()).forEach(alias -> printCertificate(keyStore, alias));
@@ -20,11 +20,12 @@ public class SmartCardTest {
 	public static void registerProvider() {
             
                 String myConfig = "name = FirefoxKeyStore\n" +
-                                   "library = \"/usr/local/lib/pkcs11/cackey.dylib\"\n" +
+                                   // "library = \":\Program Files\HID Global\ActivClient\acpkcs211.dll"\n" +
+                                   "library = \"C:\\Program Files\\HID Global\\ActivClient\\acpkcs211.dll\"\n" +
                                     "attributes = compatibility\n";
                                     //"nssArgs = \"configdir='/Users/helloworld/Library/Application Support/Firefox/Profiles/wasdwasd.default-1453211557245' certPrefix='' keyPrefix='' secmod='secmod.db' flags='readOnly' \"\n" +
                                     //"slot = 2";
-                
+                //C:\Program Files\HID Global\ActivClient\acpkcs211.dll
                 //look for path 1, if it exists, use it.. (mac)
                 
                 
@@ -46,7 +47,7 @@ public class SmartCardTest {
 		return builder.getKeyStore();
 	}
 	/*
-	 * Prints multiple certficates for multiple alias
+	 * Prints multiple certificates for multiple alias
 	 */
 
 	public static void printMultipleCertificates(KeyStore keyStore) throws KeyStoreException {

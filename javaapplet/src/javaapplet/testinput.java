@@ -20,7 +20,7 @@ public class testinput extends JApplet {
 				}
 			});
 		}
-	public void buttonActionPerformed(ActionEvent evt) throws JSException {
+	public void buttonActionPerformed(ActionEvent ev3t) throws JSException {
 		try {
 			//printMultipleCertificates(builder.getKeyStore());
 			JSObject jsObj = JSObject.getWindow(this);
