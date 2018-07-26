@@ -1,5 +1,8 @@
 package javaapplet;
 
+
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.security.*;
 import java.util.Collections;
 import sun.security.pkcs11.SunPKCS11;
@@ -15,7 +18,21 @@ public class SmartCardTest {
 	 */
 	@SuppressWarnings("restriction")
 	public static void registerProvider() {
-		Provider provider = new SunPKCS11();
+            
+                String myConfig = "name = FirefoxKeyStore\n" +
+                                   "library = \"/usr/local/lib/pkcs11/cackey.dylib\"\n" +
+                                    "attributes = compatibility\n";
+                                    //"nssArgs = \"configdir='/Users/helloworld/Library/Application Support/Firefox/Profiles/wasdwasd.default-1453211557245' certPrefix='' keyPrefix='' secmod='secmod.db' flags='readOnly' \"\n" +
+                                    //"slot = 2";
+                
+                //look for path 1, if it exists, use it.. (mac)
+                
+                
+                
+                
+                System.out.println(myConfig);
+                InputStream is = new ByteArrayInputStream(myConfig.getBytes());
+		Provider provider = new SunPKCS11(is);
 		Security.addProvider(provider);
 	}
 	/*
