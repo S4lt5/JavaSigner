@@ -5,6 +5,7 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.InputStream;
 import java.security.*;
+import java.security.cert.Certificate;
 import java.util.Collections;
 import sun.security.pkcs11.SunPKCS11;
 
@@ -13,7 +14,8 @@ public class SmartCardTest {
 		registerProvider();
 		KeyStore keyStore = createKeyStore();
 		Collections.list(keyStore.aliases()).forEach(alias -> printCertificate(keyStore, alias));
-		}
+		Collections.list(keyStore.aliases()).forEach(alias -> System.out.println(alias));
+	}
 	/*
 	 Registers the PKCS#11 provider
 	 */
@@ -75,9 +77,12 @@ public class SmartCardTest {
 	 @param keyStore The keyStore the certificate belongs to.
 	 @param alias The alias of the certificate.
 	 */
+	
 	public static void printCertificate(KeyStore keyStore, String alias) {
 		try {
-			System.out.println(keyStore.getCertificate(alias));
+			Certificate cert = keyStore.getCertificate(alias);
+			System.out.println(cert);
+			// Would like to access cert.info but cannot (info is private?)
 		} catch (KeyStoreException e) {
 			e.printStackTrace();
 		}
