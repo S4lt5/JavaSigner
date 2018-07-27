@@ -2,6 +2,7 @@ package javaapplet;
 
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.InputStream;
 import java.security.*;
 import java.util.Collections;
@@ -19,8 +20,18 @@ public class SmartCardTest {
 	@SuppressWarnings("restriction")
 	public static void registerProvider() {
             
+            
+                String libraryPath = "library = \"/usr/local/lib/pkcs11/cackey.dylib\"\n";
+                //check for opensc
+                File f = new File("C:\\Program Files\\OpenSC Project\\OpenSC\\pkcs11\\opensc-pkcs11.dll");
+                if(f.exists())
+                {
+                    libraryPath = "library = \"C:\\\\Program Files\\\\OpenSC Project\\\\OpenSC\\\\pkcs11\\\\opensc-pkcs11.dll\"";
+                }
+                
+            
                 String myConfig = "name = FirefoxKeyStore\n" +
-                                   "library = \"/usr/local/lib/pkcs11/cackey.dylib\"\n" +
+                                    libraryPath +
                                     "attributes = compatibility\n";
                                     //"nssArgs = \"configdir='/Users/helloworld/Library/Application Support/Firefox/Profiles/wasdwasd.default-1453211557245' certPrefix='' keyPrefix='' secmod='secmod.db' flags='readOnly' \"\n" +
                                     //"slot = 2";
