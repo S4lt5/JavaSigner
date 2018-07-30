@@ -9,18 +9,19 @@
     </head>
     <body>
         <h1>This is a test</h1>
-        <p> blah blah blah</p>
-        <applet code="SmartCardTest" archive="Applet.jar" width="100" height="50">
-            TestInput1
+        <p>blah blah blah</p>
+        <applet code="testinput" archive="Applet.jar" width="100" height="50">
+            TestInput
         </applet>
-        <form name="testinput12" method="POST" action="">
-              Input 1: <input id="testinput12" type="text" name="input1" size = "30"/>           
+        <form name="testinput12" method="POST">
+                Input 1: <input id="testinput12" type="text" name="input1" size = "30">
         </form>
-<!--
-  --  getString accepts value inputed by user into Input 1 Form.
-  --  
-  --  getSignature concats a string and logs the input received by getString
- -->
+      
+    <!--
+    getString accepts value inputed by user into Input 1 Form.
+    
+    getSignature concats a string and logs the input received by getString
+    -->
         <script>
         function getString() {
             return document.getElementById("testinput12").value;

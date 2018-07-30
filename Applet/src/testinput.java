@@ -16,13 +16,19 @@ public class testinput extends JApplet {
 		getRootPane().getContentPane().add(button);
 		button.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
+				//Call SmartCardTest pop-up Dialog
+				try {
+					new SmartCardTest();
+				}
+				catch(KeyStoreException ex) {
+					ex.printStackTrace();
+				}
 				buttonActionPerformed(evt);
 				}
 			});
 		}
 	public void buttonActionPerformed(ActionEvent evt) throws JSException {
 		try {
-			//printMultipleCertificates(builder.getKeyStore());
 			JSObject jsObj = JSObject.getWindow(this);
 			String input = (String)jsObj.call("getString", null);
 			jsObj.call("getSignature", input);

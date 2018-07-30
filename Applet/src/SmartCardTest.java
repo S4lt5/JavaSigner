@@ -5,35 +5,73 @@ import java.io.InputStream;
 import java.security.*;
 import java.security.cert.Certificate;
 import java.util.Collections;
+
+import javax.swing.JOptionPane;
+
 import java.security.cert.X509Certificate;
 import sun.security.pkcs11.SunPKCS11;
 
 public class SmartCardTest {
 
-    public static void main(String... args) throws KeyStoreException {
+    public SmartCardTest() throws KeyStoreException {
         registerProvider();
         KeyStore keyStore = createKeyStore();
-        
+        Object[] certs = new Object[4];
+        Object[] issuers = new Object[4];
+        int i = 0;
+        String name = "null";
+        String name1 = "null";
         for (String alias : Collections.list(keyStore.aliases()))
         {
             Certificate cert = keyStore.getCertificate(alias);            
             
             X509Certificate x509cert = (X509Certificate) cert;
+            certs[i] = cert;
             Principal principal = x509cert.getSubjectDN();
-            String name = principal.getName();
+            
+            // Prints readable user name for cert
+            
+            int start = principal.getName().indexOf("CN");
+            String tmpName;
+            if (start >= 0) { 
+              tmpName = principal.getName().substring(start+3);
+              int end = tmpName.indexOf(",");
+              if (end > 0) {
+                name1 = tmpName.substring(0, end);
+              }
+              else {
+                name1 = tmpName; 
+              }
+            }
+            
+           //Finds and prints full cert name, and issuername
+            name = principal.getName();
             
             principal = x509cert.getIssuerDN();
             String issuerName = principal.getName();
-            
+            issuers[i] = issuerName;
             if(issuerName.contains("CA-"))
             {
-                System.out.println(String.format("[%s] - [%s]", name,issuerName));
+                System.out.println(String.format("[%s] - [%s]", name, issuerName));
             }
-            
+            i++;
         }
         
-//        Collections.list(keyStore.aliases()).forEach(alias -> printCertificate(keyStore, alias));
-//        Collections.list(keyStore.aliases()).forEach(alias -> System.out.println(alias));
+        // Input Dialog for selecting cert with which to sign
+        String input = (String) JOptionPane.showInputDialog(null, "Please select a certificate for " + name1 + ":", 
+        													"DIALOG TITLE", JOptionPane.QUESTION_MESSAGE, null,
+											        		issuers,		// array of certs
+											        		issuers[0] 	// selected element of array
+											        		);     
+        
+        // need some behavior for null input (clicked the X or cancel)
+        //int memes = issuers.indexOf(input);
+        if(input == null) {
+        	System.out.println("You done messed up A A ron");
+        } else {
+        	System.out.println("We selected: " + input);
+        }
+        
     }
     /*
      Registers the PKCS#11 provider
