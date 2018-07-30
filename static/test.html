@@ -14,7 +14,8 @@
             TestInput
         </applet>
         <form name="testinput12" method="POST">
-                Input 1: <input id="testinput12" type="text" name="input1" size = "30">
+                Input 1: <textarea id="testinput1" name="input1"></textarea>
+                Signature Output 1: <textarea id="testinput2" name="input2"></textarea>
         </form>
       
     <!--
@@ -24,11 +25,12 @@
     -->
         <script>
         function getString() {
-            return document.getElementById("testinput12").value;
+            return document.getElementById("testinput1").value;
         }
-        function getSignature(strung) {
-            strong = strung + " and dan";
+        function setSignature(signature) {
+            strong = signature + " and dan";
             console.log(strong.toUpperCase());
+            document.getElementById("testinput2").value(strong);
         }
         </script>
     </body>

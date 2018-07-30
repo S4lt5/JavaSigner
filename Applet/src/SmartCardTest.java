@@ -4,29 +4,31 @@ import java.io.File;
 import java.io.InputStream;
 import java.security.*;
 import java.security.cert.Certificate;
-import java.util.Collections;
-
-import javax.swing.JOptionPane;
-
 import java.security.cert.X509Certificate;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import javax.swing.JOptionPane;
 import sun.security.pkcs11.SunPKCS11;
 
 public class SmartCardTest {
 
-    public SmartCardTest() throws KeyStoreException {
+    public static X509Certificate GetCert() throws KeyStoreException {
         registerProvider();
         KeyStore keyStore = createKeyStore();
-        Object[] certs = new Object[4];
-        Object[] issuers = new Object[4];
+        ArrayList<String> list = Collections.list(keyStore.aliases());
+        //Object[] certs = new Object[list.size()];
+        ArrayList<String> issuers = new ArrayList<String>();
+        HashMap<String,X509Certificate> map = new HashMap<>();
         int i = 0;
         String name = "null";
         String name1 = "null";
-        for (String alias : Collections.list(keyStore.aliases()))
+        for (String alias : list)
         {
             Certificate cert = keyStore.getCertificate(alias);            
             
             X509Certificate x509cert = (X509Certificate) cert;
-            certs[i] = cert;
+            //certs[i] = cert;
             Principal principal = x509cert.getSubjectDN();
             
             // Prints readable user name for cert
@@ -49,10 +51,13 @@ public class SmartCardTest {
             
             principal = x509cert.getIssuerDN();
             String issuerName = principal.getName();
-            issuers[i] = issuerName;
+            
             if(issuerName.contains("CA-"))
             {
-                System.out.println(String.format("[%s] - [%s]", name, issuerName));
+                issuers.add(issuerName);
+                map.put(issuerName, x509cert);
+                //issuers[i] = issuerName;
+                //System.out.println(String.format("[%s] - [%s]", name, issuerName));
             }
             i++;
         }
@@ -60,17 +65,29 @@ public class SmartCardTest {
         // Input Dialog for selecting cert with which to sign
         String input = (String) JOptionPane.showInputDialog(null, "Please select a certificate for " + name1 + ":", 
         													"DIALOG TITLE", JOptionPane.QUESTION_MESSAGE, null,
-											        		issuers,		// array of certs
-											        		issuers[0] 	// selected element of array
+											        		issuers.toArray(),		// array of certs
+											        		issuers.get(0) 	// selected element of array
 											        		);     
         
         // need some behavior for null input (clicked the X or cancel)
         //int memes = issuers.indexOf(input);
         if(input == null) {
         	System.out.println("You done messed up A A ron");
+                return null;
         } else {
+            
         	System.out.println("We selected: " + input);
+                System.out.println(map.get(input).toString());
+                return map.get(input);
         }
+        
+        
+    }
+    
+    public static String SignText(String text, X509Certificate cert)            
+    {
+       //do the thing
+        return "";
         
     }
     /*
