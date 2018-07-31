@@ -10,28 +10,25 @@ import netscape.javascript.*;
 public class testinput extends JApplet {
 
     private JButton button = new JButton("Submit");
-
-    public void init() {
+    public void init() { //creates button layout
         getRootPane().getContentPane().setLayout(new FlowLayout());
         getRootPane().getContentPane().add(button);
-        button.addActionListener(new ActionListener() {
+        button.addActionListener(new ActionListener() { //Create action listener and establish what action is performed upon 
             public void actionPerformed(ActionEvent evt) {
-                
-                //Call SmartCardTest pop-up Dialog
                 try {
-                    String input = GetInputText();
-                    
-                    X509Certificate cert = SmartCardTest.GetCert();
-                    String signature = SmartCardTest.SignText(input, cert);
-                    signature = "im afraid of insects(thats what he said)";
-                    SetSignature(signature);
+                    String input = GetInputText(); 	//Receives input text from html text field
+                    X509Certificate cert = SmartCardTest.GetCert(); //retrieve cert from card
+                    String signature = SmartCardTest.SignText(input, cert); //sign input text with cert
+                    SetSignature(signature); //printout signed text into html text field
                 } catch (KeyStoreException ex) {
                     ex.printStackTrace();
                 }
-             
             }
         });
     }
+    
+    
+    // Calls Get String which takes html input and returns it.
     public String GetInputText() throws JSException {
         try {
             JSObject jsObj = JSObject.getWindow(this);
@@ -43,7 +40,9 @@ public class testinput extends JApplet {
             return "";
         }
     }
-
+    
+    
+// Calls setSignature which prints the signed string
     public void SetSignature(String signature) throws JSException {
         try {
             JSObject jsObj = JSObject.getWindow(this);                                                
@@ -53,4 +52,5 @@ public class testinput extends JApplet {
             ex.printStackTrace();
         }
     }
+    
 }
