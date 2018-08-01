@@ -2,6 +2,7 @@
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.security.*;
 import java.security.cert.Certificate;
 import java.security.cert.X509Certificate;
@@ -10,6 +11,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import javax.swing.JOptionPane;
 import sun.security.pkcs11.SunPKCS11;
+import sun.misc.BASE64Encoder;
 
 public class SmartCardTest {
 	
@@ -98,27 +100,23 @@ public class SmartCardTest {
     public static String SignText(String text, X509Certificate cert)            
     {
     	String readable = "Not Technically Null";
-    	text = "I don't care about the economy";
-    	String prov = provider.getName();
-    	
+    	text = "I don't care about the economy"; 
     	try {
-    		KeyPairGenerator keyGen = KeyPairGenerator.getInstance("RSA", prov); //Generate keyPair with RSA from sun provider
-    		SecureRandom random = SecureRandom.getInstance("SHA1PRNG");
-    		keyGen.initialize(2048, random);
-    		KeyPair pair = keyGen.generateKeyPair();
-    		PrivateKey priv = pair.getPrivate(); //private key
-    		PublicKey pub = pair.getPublic();    //public key
-    		Signature sig = Signature.getInstance("SHA256withRSA", prov); //creates signature object
-    		sig.initSign(priv); //sets private key to sign data
-    		byte[] sigbytes = text.getBytes(); //convert text to byte array
-    		sig.update(sigbytes); //update signature buffer with text byte array
-    		byte[] realSig = sig.sign(); //THE SIGNING
-    		readable = realSig.toString(); //convert back to string
-    		System.out.println("The following is the sig");
-    		System.out.println(readable);
-    	}
-    	catch(NoSuchProviderException ex) {
-    		ex.printStackTrace();
+    		KeyPairGenerator kpg = KeyPairGenerator.getInstance("RSA"); //generate keypair (pub and priv)
+    		kpg.initialize(1024); // set key length to 1024 (min)
+    		KeyPair keyPair = kpg.genKeyPair(); 
+    		byte[] data = text.getBytes("UTF8"); //transform text to bytes
+    		Signature sig = Signature.getInstance("SHA256withRSA"); //use sha256withRSA for signature
+    		sig.initSign(keyPair.getPrivate()); //initliaze signature
+    		sig.update(data); // update signature buffer for signing
+    		byte[] sigBytes = sig.sign(); // sign
+    		System.out.println("Signature: " + new BASE64Encoder().encode(sigBytes)); //print signature
+    		
+    		sig.initVerify(keyPair.getPublic()); // initialize verify
+    		sig.update(data); //update buffer to verify
+    		
+    		System.out.println(sig.verify(sigBytes)); //verify and print either true or false
+    		
     	}
     	catch(NoSuchAlgorithmException ex) {
     		ex.printStackTrace();
@@ -127,6 +125,9 @@ public class SmartCardTest {
     		ex.printStackTrace();
     	}
     	catch(SignatureException ex) {
+    		ex.printStackTrace();
+    	}
+    	catch(UnsupportedEncodingException ex) {
     		ex.printStackTrace();
     	}
     	return readable;
