@@ -38,8 +38,7 @@ public class ConsoleCallbackHandler implements CallbackHandler {
                         
                         if(option == 0)
                         {
-                        char[] pswd = pass.getPassword();
-                        
+                        char[] pswd = pass.getPassword();                        
 			pc.setPassword(pswd);
                         }
                         

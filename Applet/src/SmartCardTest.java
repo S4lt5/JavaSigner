@@ -1,6 +1,7 @@
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.security.*;
@@ -9,14 +10,32 @@ import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.smartcardio.*;
 import javax.swing.JOptionPane;
-import sun.security.pkcs11.SunPKCS11;
+import org.bouncycastle.cert.jcajce.JcaCertStore;
+import org.bouncycastle.cms.*;
+import org.bouncycastle.cms.bc.BcKEKRecipientInfoGenerator;
+import org.bouncycastle.cms.jcajce.JcaSignerInfoGeneratorBuilder;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import org.bouncycastle.operator.ContentSigner;
+import org.bouncycastle.operator.OperatorCreationException;
+import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
+import org.bouncycastle.operator.jcajce.JcaDigestCalculatorProviderBuilder;
+import org.bouncycastle.util.Store;
 import sun.misc.BASE64Encoder;
+import sun.security.pkcs11.SunPKCS11;
+import sun.security.pkcs11.wrapper.*;
+import sun.security.pkcs11.wrapper.PKCS11;
+
 
 public class SmartCardTest {
 	
-	private static Provider provider;
-	
+	private static SunPKCS11 provider;
+	private static KeyStore keyStore;
+        private static PrivateKey key;
 	/*
 	 * 
 	 * 
@@ -29,7 +48,8 @@ public class SmartCardTest {
 
     public static X509Certificate GetCert() throws KeyStoreException {
         registerProvider();
-        KeyStore keyStore = createKeyStore();
+        keyStore = createKeyStore();
+        
         ArrayList<String> list = Collections.list(keyStore.aliases());
         ArrayList<String> issuers = new ArrayList<String>();
         HashMap<String,X509Certificate> map = new HashMap<>();
@@ -68,6 +88,7 @@ public class SmartCardTest {
             {
                 issuers.add(issuerName);
                 map.put(issuerName, x509cert);
+                System.out.println("Issuer: " + issuerName + "Alias:" + alias);
             }
             i++;
         }
@@ -84,57 +105,112 @@ public class SmartCardTest {
         	System.out.println("You done messed up A A ron");
                 return null;
         } else {
-        	System.out.println("We selected: " + input);
+        	System.out.println("We selected: " + input);                
+            try {
+                key = (PrivateKey)keyStore.getKey(keyStore.getCertificateAlias(map.get(input)), null);
+            } catch (NoSuchAlgorithmException ex) {
+                Logger.getLogger(SmartCardTest.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (UnrecoverableKeyException ex) {
+                Logger.getLogger(SmartCardTest.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            System.out.println(key.getAlgorithm());
                 System.out.println(map.get(input).toString());
                 return map.get(input);
         }
     }
     
-    /*
-     * 
-     * 
-     * Sign input string text and return signed text
-     * 
-     * 
-     */
-    public static String SignText(String text, X509Certificate cert)            
+    
+    public static String DoSomeStuff(String text, X509Certificate cert)
     {
-    	String readable = "Not Technically Null";
-    	text = "I don't care about the economy"; 
-    	try {
-    		KeyPairGenerator kpg = KeyPairGenerator.getInstance("RSA"); //generate keypair (pub and priv)
-    		kpg.initialize(1024); // set key length to 1024 (min)
-    		KeyPair keyPair = kpg.genKeyPair(); 
-    		byte[] data = text.getBytes("UTF8"); //transform text to bytes
-    		Signature sig = Signature.getInstance("SHA256withRSA"); //use sha256withRSA for signature
-    		sig.initSign(keyPair.getPrivate()); //initliaze signature
-    		sig.update(data); // update signature buffer for signing
-    		byte[] sigBytes = sig.sign(); // sign
-    		System.out.println("Signature: " + new BASE64Encoder().encode(sigBytes)); //print signature
-    		
-    		sig.initVerify(keyPair.getPublic()); // initialize verify
-    		sig.update(data); //update buffer to verify
-    		
-    		System.out.println(sig.verify(sigBytes)); //verify and print either true or false
-    		
-    	}
-    	catch(NoSuchAlgorithmException ex) {
-    		ex.printStackTrace();
-    	}
-    	catch(InvalidKeyException ex) {
-    		ex.printStackTrace();
-    	}
-    	catch(SignatureException ex) {
-    		ex.printStackTrace();
-    	}
-    	catch(UnsupportedEncodingException ex) {
-    		ex.printStackTrace();
-    	}
-    	return readable;
+            try {
+                byte[] data = text.getBytes("UTF8"); //transform text to bytes
+                //javax.smartcardio.Card card = new 
+                //long session = provider.getClass().getin
+                
+            } catch (UnsupportedEncodingException ex) {
+                Logger.getLogger(SmartCardTest.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            return "";
     }
     
     
     
+    /*
+     * 
+     * 
+     * Sign input string text and return signed text
+     * https://github.com/dnascimento/AISSProject/blob/master/PT_citzen_card/src/aiss/CCConnection.java
+     * 
+     */
+    public static String SignText(String text, X509Certificate cert) 
+    {
+    	String readable = "Not Technically Null";
+    	//text = "I don't care about the economy"; 
+    	try {
+            
+    		BASE64Encoder encoder = new BASE64Encoder();
+    		byte[] data = text.getBytes("UTF8"); //transform text to bytes
+                
+                        
+    		Signature sig = Signature.getInstance("SHA512withRSA",provider); //use sha256withRSA for signature                
+                
+                sig.initSign(key);
+   		//sig.initSign(keyPair.getPrivate()); //initliaze signature
+    		sig.update(data); // update signature buffer for signing
+                
+    		byte[] sigBytes = sig.sign(); // sign
+    		System.out.println("Signature: " + encoder.encode(sigBytes)); //print signature
+                System.out.println(sig.getAlgorithm());                
+    		
+                PublicKey pkey = cert.getPublicKey();
+                Signature sig2 = Signature.getInstance("SHA512withRSA");                                
+                //System.out.println(new BASE64Encoder().encode(key.getEncoded()));
+                System.out.println(encoder.encode(pkey.getEncoded()));
+                sig2.initVerify(pkey);
+    		sig2.update(data); //update buffer to verify
+    		
+    		System.out.println(sig2.verify(sigBytes)); //verify and print either true or false
+                
+                
+                
+                //do bouncycastle signing
+                Security.addProvider(new BouncyCastleProvider());
+                //      https://stackoverflow.com/questions/13212186/encryption-and-decryption-with-bouncycastle-pkcs7-cms-in-java
+                
+                // Pretty sure this is exactly what I need to do https://github.com/itext/i5js-tutorial/blob/master/signatures/src/main/java/signatures/chapter4/C4_01_SignWithPKCS11HSM.java --MG
+                
+                CMSSignedDataGenerator gen = new CMSSignedDataGenerator();
+                CMSTypedData msg = new CMSProcessableByteArray(data);                
+                
+                
+                List certList = new ArrayList();
+                certList.add(cert);
+                Store certs = new JcaCertStore(certList);
+                
+                ContentSigner sha1Signer = new JcaContentSignerBuilder("SHA512withRSA").setProvider(provider).build(key);
+                gen.addSignerInfoGenerator(new JcaSignerInfoGeneratorBuilder(new JcaDigestCalculatorProviderBuilder().setProvider("BC").build()).build(sha1Signer, cert));
+                gen.addCertificates(certs);
+                //gen.addAttributeCertificate(null);
+                CMSSignedData sigData = gen.generate(msg,false);
+                String foo = new String((byte[])sigData.getSignedContent().getContent(),"UTF-8");
+                System.out.println("-----");
+                System.out.println(foo);                
+                System.out.println(encoder.encode(sigData.getEncoded()));
+                System.out.println(sigData.isDetachedSignature());                
+    		
+    	}
+        catch(IOException | java.security.cert.CertificateEncodingException |  NoSuchAlgorithmException | InvalidKeyException | SignatureException | org.bouncycastle.cms.CMSException | OperatorCreationException ex)
+        {
+            ex.printStackTrace();
+        }    	
+    	return readable;
+    }
+    
+    
+    public static boolean isWindows() {
+            return(System.getProperty("os.name").toLowerCase().contains("win"));        
+	}
+
    
     
     /* 
@@ -150,6 +226,12 @@ public class SmartCardTest {
     @SuppressWarnings("restriction")
     public static void registerProvider() {
 
+        if(isWindows())
+        {
+         //   provider = 
+        }
+        else            
+        {
         String libraryPath = "library = \"/usr/local/lib/pkcs11/cackey.dylib\"\n";
         //check for opensc
         File f = new File("C:\\Program Files\\OpenSC Project\\OpenSC\\pkcs11\\opensc-pkcs11.dll");
@@ -170,7 +252,9 @@ public class SmartCardTest {
                 //look for path 1, if it exists, use it.. (mac)
         System.out.println(myConfig);
         InputStream is = new ByteArrayInputStream(myConfig.getBytes());
+        
         provider = new SunPKCS11(is);
+        }
         Security.addProvider(provider);
     }
     
@@ -189,7 +273,7 @@ public class SmartCardTest {
 
     public static KeyStore createKeyStore() throws KeyStoreException {
         KeyStore.CallbackHandlerProtection callbackHandler = new KeyStore.CallbackHandlerProtection(new ConsoleCallbackHandler());
-        KeyStore.Builder builder = KeyStore.Builder.newInstance("PKCS11", null, callbackHandler);
+        KeyStore.Builder builder = KeyStore.Builder.newInstance("PKCS11", null, callbackHandler);        
         return builder.getKeyStore();
     }
     
